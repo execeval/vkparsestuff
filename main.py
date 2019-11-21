@@ -3,7 +3,7 @@ from kernel import *
 
 # print(vk.likes.isLiked(user_id=yandere,ttype='photo' ,owner_id=shot,item_id =photo['id'])['liked'])
 
-
+#well
 start_time = time()
 shot, yandere = " ", " "
 
