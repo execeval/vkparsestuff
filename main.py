@@ -34,4 +34,4 @@ deepFriNet_t(shot_counter)
 # deepFriNet_translate(shot_counter)
 
 
-print("--- %s seconds ---" % (time.time() - start_time))
+print("--- %s seconds ---" % (time() - start_time))
