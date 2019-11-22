@@ -272,19 +272,19 @@ def findCommon(shot, yandere):
         count -= 24
 
 
-def findId(link): #str or list format('vk.com/domain') (['vk.com/domain1','vk.com/domain2']) or (https://vk.com/123)
-    if type(link) is list:  #output format (123456) / [12345,54321]
+def findId(link): #str or list format('vk.com/domain') (['vk.com/domain1','vk.com/domain2']) or ('https://vk.com/123')
+    if type(link) is list:
         res = []
         for i in link:
             domen = i[i.find("vk.com") + 7:]
-            if domen[0:2]=="id":
+            if domen[0:2]=="id" and domen[2].isdigit():
                 res.append(domen[2:])
             else:
                 res.append(domen)
         return [i["id"] for i in vk.users.get(user_ids=res)]
     else:
         domen = link[link.find("vk.com") + 7:]
-        if domen[0:2] == "id":
+        if domen[0:2] == "id" and domen[2].isdigit():
             return domen[2:]
         else:
             return vk.users.get(user_ids=domen)[0]['id']
