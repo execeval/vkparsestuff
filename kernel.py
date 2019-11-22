@@ -272,7 +272,7 @@ def findCommon(shot, yandere):
         count -= 24
 
 
-def get_id_from_link(link): #str or list format('vk.com/domain') (['vk.com/domain1','vk.com/domain2']) or (https://vk.com/123)
+def findId(link): #str or list format('vk.com/domain') (['vk.com/domain1','vk.com/domain2']) or (https://vk.com/123)
     if type(link) is list:  #output format (123456) / [12345,54321]
         res = []
         for i in link:
