@@ -46,7 +46,7 @@ if argv[1].startswith("active"):
     if len(argv) != 4:
         print("Wrong usage! Example: active <findIn> <findFor>")
     else:
-        print( findActiveBy(argv[3], argv[2]) )
+        print( findActiveBy(findId(argv[3]), findId(argv[2])) )
 
 '''
 =======

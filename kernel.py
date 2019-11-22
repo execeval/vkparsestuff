@@ -40,6 +40,8 @@ countLikes = lambda user_id, ttype, owner_id, item_ids, whl=25: '''
 
 
 def findActiveBy(shot, yandere):  # собираем активность на странице shot пользователя yandere
+    shot = findId(shot)
+    yandere = findId(yandere)
     res = 0
     shot_info = vk.users.get(user_ids=shot, name_case='gen')[0]
 
@@ -151,6 +153,7 @@ def findActiveBy(shot, yandere):  # собираем активность на �
 
 
 def deepFriNet(shot):
+    shot = findId(shot)
     print(shot)
     info = vk.users.get(user_ids=shot)[0]
     print(info)
@@ -222,6 +225,8 @@ def deepFriNet_t(res):
 
 
 def findCommon(shot, yandere):
+    shot = findId(shot)
+    yandere = findId(yandere)
     yandere_friend = vk.friends.get(user_id=yandere)['items']
     shot_friends = vk.friends.get(user_id=shot)['items']
     # print("Shot Friends ---", shot_friends)
@@ -268,8 +273,24 @@ def findCommon(shot, yandere):
 
 
 def findId(line):
+    find = line.find("id")
+    if not (find + 1):
+        pass
+    else:
+        end = (line[-1] == "/")
+        line = line[find + 2:len(line) - end]
+        return line
     find = line.find("vk.com/")
-    if find + 1:
+    if not (find + 1):
+        pass
+    else:
+        end = (line[-1] == "/")
+        line = line[find + 7:len(line) - end]
+        return line
+        ##return usernameToId(line)
+        ##<----РЫЖЫЙ НУЖНО ПОЛУЧИТЬ АЙДИ ПО ССЫЛКЕ ТИП vk.com/qooke
+    if line.isdigit():
         return line
     else:
-        return line[find + 7:(line[find + 7:].find("/")) + 1]
+        ##return usernameToId(line)
+        return line
