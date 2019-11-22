@@ -1,5 +1,20 @@
-from settings import *
 from collections import Counter
+from json import dumps, loads
+from sys import exit
+from vk_api import *
+from vk_api.exceptions import *
+
+with open("settings.json") as settings:
+    settings = loads(settings.read())
+
+vk_session = VkApi(settings['login'], settings['password'])
+
+try:
+    vk_session.auth()
+except Captcha and BadPassword:
+    print("Error with auth! Please use main.py set password <pass> and main.py set login <login>")
+    exit()
+vk = vk_session.get_api()
 
 userFriends = lambda user, offset=0, whl=24: '''
         var i = 0 ;  
