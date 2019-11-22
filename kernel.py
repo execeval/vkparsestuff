@@ -30,13 +30,13 @@ userFriends = lambda user, offset=0, whl=24: '''
 countLikes = lambda user_id, ttype, owner_id, item_ids, whl=25: '''
         var i = 0 ;  
         var count = 0;
-        var item_ids = %d;
-        while(i < %d){
-        count = count + API.likes.isLiked({"user_id": %d, "type": \"%d\", "owner_id": %d, "item_id": item_ids[i]})["liked"];
+        var item_ids = %r;
+        while(i < %r){
+        count = count + API.likes.isLiked({"user_id": %r, "type": \"%r\", "owner_id": %r, "item_id": item_ids[i]})["liked"];
         i = i + 1;
         }
         return count;
-        ''' % (user_id, ttype, owner_id, item_ids, whl)
+        ''' % (str(user_id), str(ttype), str(owner_id), str(item_ids), str(whl))
 
 
 def findActiveBy(shot, yandere):  # собираем активность на странице shot пользователя yandere
@@ -265,3 +265,11 @@ def findCommon(shot, yandere):
 
         offset += 24
         count -= 24
+
+
+def findId(line):
+    find = line.find("vk.com/")
+    if find + 1:
+        return line
+    else:
+        return line[find + 7:(line[find + 7:].find("/")) + 1]

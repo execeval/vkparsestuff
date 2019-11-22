@@ -10,7 +10,7 @@ print(""" __      ___    _____                     _____ _          __  __
      \/   |_|\_\_|   \__,_|_|  |___/\___|_____/ \__|\__,_|_| |_|  
              https://github.com/execeval/vkparsestuff                                                            
                                                                   """)
-print("""Usage:\nvkpasrse.py set (login/password/output)  ##output can be py and js""")
+print("""Usage:\nvkparse.py set (login/password/output)  ##output can be py and js\nvkparse.py active <findIn> <findFor>  ## shows findFor's active in findIn's page\n""")
 
 global settings
 with open("settings.json") as file:
@@ -26,7 +26,7 @@ def setsets(whatToSet, data, settings=settings):
 
 if len(argv) - 1:
     if argv[1].startswith("set"):
-        if len(argv) < 4:
+        if len(argv) != 4:
             print("Wrong usage! Example to set: set password {your password}")
         else:
             if argv[2].startswith("password"):
@@ -37,9 +37,16 @@ if len(argv) - 1:
                 setsets("login", argv[3])
                 print("Login was changed to " + argv[3])
         exit()
+else:
+    exit()
 
 from kernel import *
 
+if argv[1].startswith("active"):
+    if len(argv) != 4:
+        print("Wrong usage! Example: active <findIn> <findFor>")
+    else:
+        print( findActiveBy(argv[3], argv[2]) )
 
 '''
 
