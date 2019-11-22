@@ -10,7 +10,7 @@ print(""" __      ___    _____                     _____ _          __  __
      \/   |_|\_\_|   \__,_|_|  |___/\___|_____/ \__|\__,_|_| |_|  
              https://github.com/execeval/vkparsestuff                                                            
                                                                   """)
-print("""Usage:\nvkparse.py set (login/password/output)  ##output can be py and js\nvkparse.py active <findIn> <findFor>  ## shows findFor's active in findIn's page\n""")
+print("""Usage:\nvkparse.py set (login/password)\nvkparse.py active <findIn> <findFor>  ## shows findFor's active in findIn's page\n""")
 
 global settings
 with open("settings.json") as file:
@@ -49,7 +49,6 @@ if argv[1].startswith("active"):
         print( findActiveBy(argv[3], argv[2]) )
 
 '''
-
 =======
 #well
 >>>>>>> 9131397ec9fdabc63d58f9c7376b27461a55da4a
