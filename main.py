@@ -41,9 +41,13 @@ if len(argv) - 1:
 from kernel import *
 
 
+<<<<<<< HEAD
 
 '''
 
+=======
+#well
+>>>>>>> 9131397ec9fdabc63d58f9c7376b27461a55da4a
 start_time = time()
 shot, yandere = "237921652", " "
 
