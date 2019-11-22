@@ -41,8 +41,6 @@ if len(argv) - 1:
 from kernel import *
 
 
-<<<<<<< HEAD
-
 '''
 
 =======
