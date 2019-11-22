@@ -271,26 +271,11 @@ def findCommon(shot, yandere):
         offset += 24
         count -= 24
 
-
-def findId(line):
-    find = line.find("id")
-    if not (find + 1):
-        pass
+def get_id_from_link(link):
+    if type(link) == list:
+        res = []
+        for i in link:
+            res.append(vk.users.get(user_ids=i[i.find("vk.com") + 7:])[0]["id"])
+        return res
     else:
-        end = (line[-1] == "/")
-        line = line[find + 2:len(line) - end]
-        return line
-    find = line.find("vk.com/")
-    if not (find + 1):
-        pass
-    else:
-        end = (line[-1] == "/")
-        line = line[find + 7:len(line) - end]
-        return line
-        ##return usernameToId(line)
-        ##<----РЫЖЫЙ НУЖНО ПОЛУЧИТЬ АЙДИ ПО ССЫЛКЕ ТИП vk.com/qooke
-    if line.isdigit():
-        return line
-    else:
-        ##return usernameToId(line)
-        return line
+        return vk.users.get(user_ids=link[link.find("vk.com") + 7:])[0]["id"]
