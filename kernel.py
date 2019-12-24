@@ -27,7 +27,7 @@ userFriends = lambda user, offset=0, whl=24: '''
         return members;
         ''' % (user, offset, whl)
 
-countLikes = lambda user_id, ttype, owner_id, item_ids, whl=25: '''
+countLikes = lambda user_id, js_type, owner_id, item_ids, whl=25: '''
         var i = 0 ;  
         var count = 0;
         var item_ids = %r;
@@ -36,43 +36,39 @@ countLikes = lambda user_id, ttype, owner_id, item_ids, whl=25: '''
         i = i + 1;
         }
         return count;
-        ''' % (str(user_id), str(ttype), str(owner_id), str(item_ids), str(whl))
+        ''' % (str(item_ids), str(whl), str(user_id), str(js_type), str(owner_id))
 
 
-def findActiveBy(shot, yandere):  # собираем активность на странице shot пользователя yandere
-    shot = findId(shot)
-    yandere = findId(yandere)
+def findActiveBy(owner, user):
+    owner = findId(owner)
+    user = findId(user)
     res = 0
-    shot_info = vk.users.get(user_ids=shot, name_case='gen')[0]
+    owner_info = vk.users.get(user_ids=owner, name_case='gen')[0]
 
-    # print("На странице",shot_info['first_name'],shot_info['last_name'])
+    user_info = vk.users.get(user_ids=user, name_case='gen')[0]
 
-    yandere_info = vk.users.get(user_ids=yandere, name_case='gen')[0]
+    print(">Считаем лайки", user_info['first_name'], user_info['last_name'] + '<')
 
-    print(">Считаем лайки", yandere_info['first_name'], yandere_info['last_name'] + '<')
-
-    if shot_info['is_closed'] and not (shot_info['can_access_closed']):
+    if owner_info['is_closed'] and not (owner_info['can_access_closed']):
         print("Нет доступа к аккаунту")
         return "full_close"
 
     wall, photos, saves = False, False, False
-    # shot_friend = vk.friends.get(user_id=shot)['items']
 
     try:
-        wall = vk.wall.get(owner_id=shot, count='100')
+        wall = vk.wall.get(owner_id=owner, count='100')
     except ApiError:
         print("стена закрыта")
 
     try:
-        photos = vk.photos.get(owner_id=shot, album_id="profile", rev="1", count="100")
+        photos = vk.photos.get(owner_id=owner, album_id="profile", rev="1", count="100")
     except ApiError:
         print("профильные фотки закрыты")
 
     try:
-        saves = vk.photos.get(owner_id=shot, album_id="saved", rev="1", count="100")
+        saves = vk.photos.get(owner_id=owner, album_id="saved", rev="1", count="100")
     except ApiError:
         print("сохры закрыты")
-    # print(wall) #["count"]
 
     if saves:
         saved_likes = 0
@@ -80,50 +76,38 @@ def findActiveBy(shot, yandere):  # собираем активность на �
 
         for photo in saves['items']:
             photo_ids.append(photo['id'])
-        # print(Code.countLikes(ttype="photo ",item_ids=photo_ids,owner_id=shot,user_id=yandere))
 
         lenc = len(photo_ids)
         ind = 0
 
         while lenc > 25:
             saved_likes += int(vk.execute(
-                code=countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere)))
+                code=countLikes(js_type="photo", item_ids=photo_ids[ind:ind + 25], owner_id=owner, user_id=user)))
             ind += 25
             lenc -= 25
 
         saved_likes += int(vk.execute(
-            code=countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere,
+            code=countLikes(js_type="photo", item_ids=photo_ids[ind:ind + 25], owner_id=owner, user_id=user,
                             whl=lenc)))
         res += saved_likes
         print("Лайкнуто сохров:", saved_likes)
 
-        # for likes in vk.likes.getList(ttype="photo", owner_id=shot, item_id=photo["id"])['items']:  #print(
-        # vk.likes.isLiked(user_id=yandere,ttype='photo' ,owner_id=shot,item_id =photo['id'])['liked'])
-        # like_shot_saved_photos[likes] += 1
-
     if photos:
         prof_likes = 0
         photo_ids = []
-        # print(photos['items'])
-
         for photo in photos['items']:
-            # print(vk.likes.isLiked(user_id=yandere, ttype='photo', owner_id=shot, item_id=photo['id'])['liked'])
-            # print(photo)
             photo_ids.append(photo['id'])
 
-        # print(Code.countLikes(ttype="photo ",item_ids=photo_ids,owner_id=shot,user_id=yandere))
         lenc = len(photo_ids)
         ind = 0
 
         while lenc > 25:
-            # print(Code.countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere))
             prof_likes += int(vk.execute(
-                code=countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere)))
+                code=countLikes(js_type="photo", item_ids=photo_ids[ind:ind + 25], owner_id=owner, user_id=user)))
             ind += 25
             lenc -= 25
-
         prof_likes += int(vk.execute(
-            code=countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere,
+            code=countLikes(js_type="photo", item_ids=photo_ids[ind:ind + 25], owner_id=owner, user_id=user,
                             whl=lenc)))
         res += prof_likes
         print("Лайкнуто профильных фоток:", prof_likes)
@@ -137,47 +121,46 @@ def findActiveBy(shot, yandere):  # собираем активность на �
         ind = 0
 
         while lenc > 25:
-            # print(Code.countLikes(ttype="photo", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere))
             wall_likes += int(vk.execute(
-                code=countLikes(ttype="post", item_ids=wall_ids[ind:ind + 25], owner_id=shot,
-                                user_id=yandere)))
+                code=countLikes(js_type="post", item_ids=wall_ids[ind:ind + 25], owner_id=owner,
+                                user_id=user)))
             ind += 25
             lenc -= 25
 
         wall_likes += int(vk.execute(
-            code=countLikes(ttype="post", item_ids=photo_ids[ind:ind + 25], owner_id=shot, user_id=yandere,
+            code=countLikes(js_type="post", item_ids=photo_ids[ind:ind + 25], owner_id=owner, user_id=user,
                             whl=lenc)))
         res += wall_likes
         print("Лайкнуто записей на стене:", wall_likes)
     return res
 
 
-def deepFriNet(shot):
-    shot = findId(shot)
-    print(shot)
-    info = vk.users.get(user_ids=shot)[0]
+def deepFriNet(owner):
+    owner = findId(owner)
+    print(owner)
+    info = vk.users.get(user_ids=owner)[0]
     print(info)
 
     if info['is_closed'] and info['can_access_closed']:
         return "full_close"
 
     wall, photos, saves = False, False, False
-    like_shot_wall = Counter()
-    like_shot_photos = Counter()
-    like_shot_saved_photos = Counter()
+    like_owner_wall = Counter()
+    like_owner_photos = Counter()
+    like_owner_saved_photos = Counter()
 
     try:
-        wall = vk.wall.get(owner_id=shot, count='100')
+        wall = vk.wall.get(owner_id=owner, count='100')
     except ApiError:
         return ">стена закрыта"
 
     try:
-        photos = vk.photos.get(owner_id=shot, album_id="profile", rev="1")
+        photos = vk.photos.get(owner_id=owner, album_id="profile", rev="1")
     except ApiError:
         return ">профильные фотки закрыты"
 
     try:
-        saves = vk.photos.get(owner_id=shot, album_id="saved", rev="1")
+        saves = vk.photos.get(owner_id=owner, album_id="saved", rev="1")
     except ApiError:
         return ">сохры закрыты"
 
@@ -185,22 +168,22 @@ def deepFriNet(shot):
     if saves:
         for photo in saves['items']:
             # print(photo)
-            for likes in vk.likes.getList(ttype="photo", owner_id=shot, item_id=photo["id"])['items']:
-                like_shot_saved_photos[likes] += 1
+            for likes in vk.likes.getList(ttype="photo", owner_id=owner, item_id=photo["id"])['items']:
+                like_owner_saved_photos[likes] += 1
 
     if photos:
         for photo in photos['items']:
             # print(photo)
-            for likes in vk.likes.getList(ttype="photo", owner_id=shot, item_id=photo["id"])['items']:
-                like_shot_photos[likes] += 1
+            for likes in vk.likes.getList(ttype="photo", owner_id=owner, item_id=photo["id"])['items']:
+                like_owner_photos[likes] += 1
 
     if wall:
         for post in wall["items"]:
-            for likes in vk.likes.getList(ttype="post", owner_id=shot, item_id=post["id"])['items']:
-                like_shot_wall[likes] += 1
+            for likes in vk.likes.getList(ttype="post", owner_id=owner, item_id=post["id"])['items']:
+                like_owner_wall[likes] += 1
 
     d = 0
-    return [like_shot_wall.most_common(), like_shot_photos.most_common(), like_shot_saved_photos.most_common()]
+    return [like_owner_wall.most_common(), like_owner_photos.most_common(), like_owner_saved_photos.most_common()]
 
 
 def deepFriNet_t(res):
@@ -224,44 +207,44 @@ def deepFriNet_t(res):
         f += 1
 
 
-def findCommon(shot, yandere):
-    shot = findId(shot)
-    yandere = findId(yandere)
-    yandere_friend = vk.friends.get(user_id=yandere)['items']
-    shot_friends = vk.friends.get(user_id=shot)['items']
-    # print("Shot Friends ---", shot_friends)
-    count = len(shot_friends)
+def findCommon(owner, user):
+    owner = findId(owner)
+    user = findId(user)
+    user_friend = vk.friends.get(user_id=user)['items']
+    owner_friends = vk.friends.get(user_id=owner)['items']
+    # print("Shot Friends ---", owner_friends)
+    count = len(owner_friends)
     offset = 0
 
     while count > 24:
-        # print(code(user=shot ,offset=offset))
-        res = vk.execute(code=userFriends(user=shot, offset=offset))
+        # print(code(user=owner ,offset=offset))
+        res = vk.execute(code=userFriends(user=owner, offset=offset))
         for i in range(24):
             try:
-                shot_friend = shot_friends[offset + i]
-                if str(shot_friend) == str(yandere):
+                owner_friend = owner_friends[offset + i]
+                if str(owner_friend) == str(user):
                     continue
-                shot_friend_friends = res[i]
-                shot_friend_info = vk.users.get(user_ids=shot_friend, fields="domain")[0]
-                common_shot = (set(shot_friend_friends) & set(shot_friends))
-                common_yandere = (set(shot_friend_friends) & set(yandere_friend))
-                if len(common_shot) > 1 or len(common_yandere) > 1:
+                owner_friend_friends = res[i]
+                owner_friend_info = vk.users.get(user_ids=owner_friend, fields="domain")[0]
+                common_owner = (set(owner_friend_friends) & set(owner_friends))
+                common_user = (set(owner_friend_friends) & set(user_friend))
+                if len(common_owner) > 1 or len(common_user) > 1:
                     print('##########################################')
-                    print('######', shot_friend_info['first_name'], shot_friend_info['last_name'],
-                          "vk.com/" + shot_friend_info["domain"], '######')
+                    print('######', owner_friend_info['first_name'], owner_friend_info['last_name'],
+                          "vk.com/" + owner_friend_info["domain"], '######')
                     print('##########################################')
-                    findActiveBy(shot=shot_friend, yandere=shot)  # возвращает сумму лайков на аккаунте
-                    # print(common_shot)
-                    if len(common_shot) > 0:
-                        print("Общие друзья shot")
-                        for dd in common_shot:
+                    findActiveBy(owner=owner_friend, user=owner)  # возвращает сумму лайков на аккаунте
+                    # print(common_owner)
+                    if len(common_owner) > 0:
+                        print("Общие друзья owner")
+                        for dd in common_owner:
                             inf = vk.users.get(user_ids=dd, fields="domain")[0]
                             print(inf['first_name'], inf['last_name'], "vk.com/" + inf["domain"])
-                    if len(common_yandere) > 1:
+                    if len(common_user) > 1:
                         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!0000000"
                               "-------------------------------------------")
-                        print("Общие друзья c yandere !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                        for dd in common_yandere:
+                        print("Общие друзья c user !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        for dd in common_user:
                             inf = vk.users.get(user_ids=dd, fields="domain")[0]
                             print(inf['first_name'], inf['last_name'], "vk.com/" + inf["domain"])
             except ApiError as shit:
@@ -272,25 +255,12 @@ def findCommon(shot, yandere):
         count -= 24
 
 
-def findId(line):
-    find = line.find("id")
-    if not (find + 1):
-        pass
+def findId(link):
+    link = link.replace("https://", "")
+    link = link.replace("http://", "")
+    link = link.replace("/", "")
+    link = link.replace("vk.com", "")
+    if link.isdigit():
+        return int(link)
     else:
-        end = (line[-1] == "/")
-        line = line[find + 2:len(line) - end]
-        return line
-    find = line.find("vk.com/")
-    if not (find + 1):
-        pass
-    else:
-        end = (line[-1] == "/")
-        line = line[find + 7:len(line) - end]
-        return line
-        ##return usernameToId(line)
-        ##<----РЫЖЫЙ НУЖНО ПОЛУЧИТЬ АЙДИ ПО ССЫЛКЕ ТИП vk.com/qooke
-    if line.isdigit():
-        return line
-    else:
-        ##return usernameToId(line)
-        return line
+        return vk.users.get(user_ids=link)[0]['id']

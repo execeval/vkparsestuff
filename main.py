@@ -10,14 +10,15 @@ print(""" __      ___    _____                     _____ _          __  __
      \/   |_|\_\_|   \__,_|_|  |___/\___|_____/ \__|\__,_|_| |_|  
              https://github.com/execeval/vkparsestuff                                                            
                                                                   """)
-print("""Usage:\nvkparse.py set (login/password)\nvkparse.py active <findIn> <findFor>  ## shows findFor's active in findIn's page\n""")
+print("""Usage:\nvkparse.py set (login/password)\nvkparse.py active <findIn> <findFor>  ## shows findFor's active in 
+        findIn's page\n""")
 
 global settings
 with open("settings.json") as file:
     settings = loads(file.read())
 
 
-def setsets(whatToSet, data, settings=settings):
+def dumpSettings(whatToSet, data, settings=settings):
     settings[whatToSet] = data
     settings = dumps(settings)
     with open("settings.json", "w") as file:
@@ -30,11 +31,11 @@ if len(argv) - 1:
             print("Wrong usage! Example to set: set password {your password}")
         else:
             if argv[2].startswith("password"):
-                setsets("password", argv[3])
+                dumpSettings("password", argv[3])
                 print("Password was changed to " + argv[3])
                 exit()
             elif argv[2].startswith("login"):
-                setsets("login", argv[3])
+                dumpSettings("login", argv[3])
                 print("Login was changed to " + argv[3])
         exit()
 else:
