@@ -164,16 +164,13 @@ def deepFriNet(owner):
     except ApiError:
         return ">сохры закрыты"
 
-    # print(wall) #["count"]
     if saves:
         for photo in saves['items']:
-            # print(photo)
             for likes in vk.likes.getList(ttype="photo", owner_id=owner, item_id=photo["id"])['items']:
                 like_owner_saved_photos[likes] += 1
 
     if photos:
         for photo in photos['items']:
-            # print(photo)
             for likes in vk.likes.getList(ttype="photo", owner_id=owner, item_id=photo["id"])['items']:
                 like_owner_photos[likes] += 1
 
@@ -197,7 +194,6 @@ def deepFriNet_t(res):
 
         for z in list_user: all_id.append(z[0])
 
-        # print(str(all_id)[1:-1])
         info_list = vk.users.get(user_ids=all_id, fields="domain")
 
         for i in range(len(list_user)):
@@ -212,12 +208,10 @@ def findCommon(owner, user):
     user = findId(user)
     user_friend = vk.friends.get(user_id=user)['items']
     owner_friends = vk.friends.get(user_id=owner)['items']
-    # print("Shot Friends ---", owner_friends)
     count = len(owner_friends)
     offset = 0
 
     while count > 24:
-        # print(code(user=owner ,offset=offset))
         res = vk.execute(code=userFriends(user=owner, offset=offset))
         for i in range(24):
             try:
@@ -234,7 +228,6 @@ def findCommon(owner, user):
                           "vk.com/" + owner_friend_info["domain"], '######')
                     print('##########################################')
                     findActiveBy(owner=owner_friend, user=owner)  # возвращает сумму лайков на аккаунте
-                    # print(common_owner)
                     if len(common_owner) > 0:
                         print("Общие друзья owner")
                         for dd in common_owner:
